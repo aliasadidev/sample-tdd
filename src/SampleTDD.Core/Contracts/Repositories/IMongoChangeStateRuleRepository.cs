@@ -12,7 +12,6 @@ namespace SampleTDD.Core.Contracts.Repositories
 		PermissionDTO GetCurrentOperations(RoleTypes roleID, StateTypes currentBPState);
 		IEnumerable<ChangeStateRule> GetNextStep(StateTypes currentState, OperationTypes operationType);
 		IEnumerable<ChangeStateRule> GetNextStep(IClientSessionHandle session, ObjectId bpID, StateTypes currentState, RoleTypes role, OperationTypes operationType);
-		bool CanStart(RoleTypes roleID);
 		RoleTypes GetRoleByCurrentState(IClientSessionHandle session, StateTypes nextState);
 		bool IsOneToOneState(StateTypes nextState);
 	}

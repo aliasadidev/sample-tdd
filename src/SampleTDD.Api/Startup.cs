@@ -8,6 +8,7 @@ using SampleTDD.Core.Modules;
 using SampleTDD.Infrastructure.Services;
 using SampleTDD.Infrastructure.Data.Mongo;
 using SampleTDD.Core.DTOs.Settings;
+using SampleTDD.Api.Modules;
 
 namespace SampleTDD.Api
 {
@@ -44,6 +45,7 @@ namespace SampleTDD.Api
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
 
+			app.UseMiddleware<AuthApiMiddleware>();
 			if (env.IsDevelopment() || env.IsStaging())
 			{
 				app.UseDeveloperExceptionPage();
