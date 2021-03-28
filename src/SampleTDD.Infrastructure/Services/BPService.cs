@@ -9,6 +9,7 @@ using SampleTDD.Core.DTOs;
 using SampleTDD.Core.Modules;
 using System;
 using SampleTDD.Core.Collections.BPIs.BPISabteDarkhast;
+using System.Collections.Generic;
 
 namespace SampleTDD.Infrastructure.Services
 {
@@ -41,11 +42,11 @@ namespace SampleTDD.Infrastructure.Services
 		public void Start(BPDTO bpDTO, RoleTypes roleID, long userID)
 		{
 
-			var bpCollec = new BP();
+			BP bpCollec = new BP();
 
-			var sd = _mapper.Map<BPISabteDarkhast>(bpDTO.SabteDarkhast);
+			BPISabteDarkhast sabteDarkhast = _mapper.Map<BPISabteDarkhast>(bpDTO.SabteDarkhast);
 
-			bpCollec.SabteDarkhast = sd;
+			bpCollec.SabteDarkhast = sabteDarkhast;
 			bpCollec.UserID = userID;
 			bpCollec.CreationTime = DateTime.Now;
 
@@ -53,7 +54,6 @@ namespace SampleTDD.Infrastructure.Services
 			{
 				_bpRepo.Add(session, bpCollec);
 				_wfeSrv.Start(session, bpCollec._id, roleID, userID);
-
 			});
 			bpDTO.ID = bpCollec._id.ToString();
 
@@ -64,7 +64,7 @@ namespace SampleTDD.Infrastructure.Services
 			_bpRepo.StartTransaction((session) =>
 			{
 				ObjectId bpID = ObjectId.Parse(dto.ID);
-				var currentState = _wfeSrv.GetCurrentBpState(bpID, roleID);
+				StateTypes currentState = _wfeSrv.GetCurrentBpState(bpID, roleID);
 				bool hasApproveDTO = _dtoMapper.CheckApproveTypeIsMapped(currentState);
 
 				if (hasApproveDTO)
@@ -80,12 +80,12 @@ namespace SampleTDD.Infrastructure.Services
 			Type targetType = _dtoMapper.GetApproveType(currentState);
 
 			BP bp = _bpRepo.Get(session, bpID);
-			BPDTO dtox = _mapper.Map<BPDTO>(bp);
-			var resultx = _mapper.Map(dto, typeof(BPDTO), targetType);
+			BPDTO oldDTO = _mapper.Map<BPDTO>(bp);
+			object newDTO = _mapper.Map(dto, typeof(BPDTO), targetType);
 
-			var final = CoreExtensions.MergeObject(resultx, dtox);
+			BPDTO finalMergedDTO = CoreExtensions.MergeObject(newDTO, oldDTO);
 
-			var finalBP = _mapper.Map<BP>(final);
+			BP finalBP = _mapper.Map<BP>(finalMergedDTO);
 
 			_bpRepo.UpdateOrInsertBPI(session, finalBP);
 		}
@@ -101,12 +101,19 @@ namespace SampleTDD.Infrastructure.Services
 
 			BP bp = _bpRepo.Get(bpID);
 			BPDTO dto = _mapper.Map<BPDTO>(bp);
-			var result = _mapper.Map(dto, typeof(BPDTO), targetType);
-			BPDTO resultfinal = _mapper.Map(result, targetType, typeof(BPDTO)) as BPDTO;
-			resultfinal.Permission = _wfeSrv.GetPremissions(bpID, roleID, userID);
-			resultfinal.StateName = targetState.ToString();
-			resultfinal.StateType = targetState;
-			return resultfinal;
+			object result = _mapper.Map(dto, typeof(BPDTO), targetType);
+			BPDTO finalResult = _mapper.Map(result, targetType, typeof(BPDTO)) as BPDTO;
+			finalResult.Permission = _wfeSrv.GetPremissions(bpID, roleID, userID);
+			finalResult.StateName = targetState.ToString();
+			finalResult.StateType = targetState;
+			return finalResult;
+		}
+
+		public IEnumerable<BPDTO> GetAll(RoleTypes roleID, long userID)
+		{
+			IEnumerable<BP> list = _bpRepo.GetAll(x => x.UserID == userID);
+			IEnumerable<BPDTO> dtoList = _mapper.Map<IEnumerable<BPDTO>>(list);
+			return dtoList;
 		}
 	}
 }

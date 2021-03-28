@@ -5,19 +5,9 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.AspNetCore.Hosting;
-using Xunit;
 using Microsoft.Extensions.Configuration;
 using System.Net.Http.Headers;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using System.Linq;
-using SampleTDD.Core.Contracts.Services;
-using SampleTDD.Infrastructure.Services;
-using System.Text;
-using System.Security.Claims;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using SampleTDD.Core.Constants;
-using SampleTDD.Core.Contracts.Services.Security;
 using SampleTDD.IntegrationTest.TestServices;
 using SampleTDD.Core.Contracts.Repositories;
 using SampleTDD.IntegrationTest.Seeds;
@@ -41,45 +31,6 @@ namespace SampleTDD.IntegrationTest
 			Server.Dispose();
 		}
 
-		protected virtual void InitializeServices(IServiceCollection services)
-		{
-			//  var startupAssembly = typeof(TStartup).GetTypeInfo().Assembly;
-
-
-			// var descriptors = services.Where(d => d.ServiceType == typeof(IAuthorizeWebService) ||
-			//                                                d.ServiceType == typeof(IMongoSampleTDDContext)).ToList();//DbContextOptions<ApplicationDbContext>)
-
-
-			// foreach (var descriptor in descriptors)
-			// {
-			//     services.Remove(descriptor);
-			// }
-
-			// services.AddTransient<IMongoSampleTDDContext, TestMongoSampleTDDContext>();
-			// services.AddTransient<IAuthorizeWebService, TestAuthorizeWebService>();
-
-			// services.AddTransient<DBSeed>();
-
-
-
-			// var manager = new ApplicationPartManager
-			// {
-			//     ApplicationParts =
-			//     {
-			//         new AssemblyPart(startupAssembly)
-			//     },
-			//     FeatureProviders =
-			//     {
-			//         new ControllerFeatureProvider()
-			//     }
-			// };
-
-			// services.AddSingleton(manager);
-			// services.AddMvc();
-		}
-
-
-
 		protected TestFixture(string relativeTargetProjectParentDir)
 		{
 			var startupAssembly = typeof(TStartup).GetTypeInfo().Assembly.ManifestModule.Name.Replace(".dll", "");
@@ -87,20 +38,19 @@ namespace SampleTDD.IntegrationTest
 
 			var configurationBuilder = new ConfigurationBuilder()
 				.SetBasePath(contentRoot)
-				.AddJsonFile("appsettings.Test.json");
+				.AddJsonFile("appsettings.Development.json");
 			var configuration = configurationBuilder.Build();
 			configuration["MongoDB:Database"] = configuration["MongoDB:Database"] + Guid.NewGuid();
 
 			var webHostBuilder = new WebHostBuilder()
 				.UseContentRoot(contentRoot)
-				.UseEnvironment("Test")
+				.UseEnvironment("Development")
 				.UseStartup(typeof(TStartup))
-				//   .ConfigureServices(InitializeServices)
 				.UseConfiguration(configuration)
 				.ConfigureTestServices((services) =>
 				{
-					var descriptors = services.Where(d => d.ServiceType == typeof(IAuthorizeWebService) ||
-														   d.ServiceType == typeof(IMongoSampleTDDContext)).ToList();//DbContextOptions<ApplicationDbContext>)
+					var descriptors = services.Where(d =>
+														   d.ServiceType == typeof(IMongoSampleTDDContext)).ToList();
 
 
 					foreach (var descriptor in descriptors)
@@ -109,8 +59,8 @@ namespace SampleTDD.IntegrationTest
 					}
 
 					services.AddTransient<IMongoSampleTDDContext, TestMongoSampleTDDContext>();
-					services.AddTransient<IAuthorizeWebService, TestAuthorizeWebService>();
 					services.AddTransient<DBSeed>();
+					services.AddRazorPages();
 				});
 
 

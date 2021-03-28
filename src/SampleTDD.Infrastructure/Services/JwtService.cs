@@ -23,7 +23,7 @@ namespace SampleTDD.Infrastructure.Services
 		public JwtClaimsDTO Identity { get; private set; }
 
 
-		public const string SECRET_KEY = "Simple";
+		public const string SECRET_KEY = "1qaz2wsx3edc4rfv5tgb6yhn7ujm";
 
 
 

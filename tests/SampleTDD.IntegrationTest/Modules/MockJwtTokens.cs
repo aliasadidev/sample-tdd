@@ -42,7 +42,6 @@ namespace SampleTDD.IntegrationTest
 				{
 					new Claim(ClaimTypes.Name, "-2"),
 					new Claim("UserRoles", userRoleDto),
-					new Claim("NationalID", "0000000000"),
 					new Claim("FirstName","Insured Customer"),
 					new Claim("LastName","Test"),
 					new Claim("UserName","InsuredCustomer"),
@@ -51,17 +50,11 @@ namespace SampleTDD.IntegrationTest
 			return GenerateToken(claims);
 		}
 
-
-	
-
-
-		
-
 		public static string AdminUser()
 		{
 			var userRoles = new[]{
 								new {
-									RoleID = RoleTypes.SampleTDDAdmin,
+									RoleID = RoleTypes.Admin,
 									SubSystemID = AppSetting.SUB_SYSTEM_ID,
 									HCode = "1.13.1.1"
 								}
@@ -72,7 +65,6 @@ namespace SampleTDD.IntegrationTest
 				{
 					new Claim(ClaimTypes.Name, "-5"),
 					new Claim("UserRoles", userRoleDto),
-					new Claim("NationalID", "0000000000"),
 					new Claim("FirstName","Admin"),
 					new Claim("LastName","Test"),
 					new Claim("UserName","SampleTDDAdmin"),

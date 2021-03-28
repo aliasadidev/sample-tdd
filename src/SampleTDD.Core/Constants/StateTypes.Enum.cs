@@ -12,6 +12,13 @@ namespace SampleTDD.Core.Constants
 		/// </summary>
 		[Description("Start")]
 		Start = 1,
+
+		/// <summary>
+		///  Request New Job
+		/// </summary>
+		[Description("Request New Job")]
+		RequestNewJob = 2,
+
 		/// <summary>
 		/// Finished Successfully
 		/// </summary>

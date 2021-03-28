@@ -25,14 +25,8 @@ namespace SampleTDD.IntegrationTest
 			return toDTOResult<JSONResult<TResult>>(response);
 		}
 
-		public static PaginationResult<TResult> ToPaginationResult<TResult>(this HttpResponseMessage response)
-				where TResult : class
-		{
-			return toDTOResult<PaginationResult<TResult>>(response);
-		}
-
 		public static JSONResultList<TResult> ToDTOListResult<TResult>(this HttpResponseMessage response)
-			   where TResult : class
+					 where TResult : class
 		{
 			return toDTOResult<JSONResultList<TResult>>(response);
 		}
@@ -49,27 +43,14 @@ namespace SampleTDD.IntegrationTest
 			string token;
 			switch (role)
 			{
-				case RoleTypes.BranchAdmin:
-					{
-						token = MockJwtTokens.BranchAdminUser();
-						break;
-					}
-				case RoleTypes.Assessor:
-					{
-						token = MockJwtTokens.AssessorUser();
-						break;
-					}
+
 				case RoleTypes.InsuredCustomer:
 					{
 						token = MockJwtTokens.InsuredCustomerUser();
 						break;
 					}
-				case RoleTypes.Doctor:
-					{
-						token = MockJwtTokens.DoctorUser();
-						break;
-					}
-				case RoleTypes.SampleTDDAdmin:
+
+				case RoleTypes.Admin:
 					{
 						token = MockJwtTokens.AdminUser();
 						break;

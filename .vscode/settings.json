@@ -2,4 +2,5 @@
 	"editor.insertSpaces": false,
 	"editor.detectIndentation": false,
 	"editor.tabSize": 4,
+	"dotnet-test-explorer.testProjectPath": "tests/**/*Test.@(csproj|vbproj|fsproj)"
 }

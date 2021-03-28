@@ -4,6 +4,7 @@ using SampleTDD.Core.Contracts.Services;
 using SampleTDD.Core.Contracts.Services.Security;
 using SampleTDD.Core.DTOs;
 using SampleTDD.Core.Wrappers;
+using System.Collections.Generic;
 
 namespace SampleTDD.Api.Controllers
 {
@@ -30,10 +31,18 @@ namespace SampleTDD.Api.Controllers
 
 		[HttpPost]
 		[Route("[action]")]
-		public JSONResultBase Post([FromBody] BPDTO dto)
+		public JSONResultBase NewBP([FromBody] BPDTO dto)
 		{
 			_bpService.Start(dto, _jwtService.Identity.RoleID, _jwtService.Identity.UserID);
 			return OK(message: "The business process successfully created");
+		}
+
+		[HttpGet]
+		[Route("[action]")]
+		public JSONResultListWrapper<BPDTO> GetAll()
+		{
+			IEnumerable<BPDTO> list = _bpService.GetAll(_jwtService.Identity.RoleID, _jwtService.Identity.UserID);
+			return new JSONResultList<BPDTO>(list);
 		}
 
 		[HttpGet]
@@ -41,7 +50,7 @@ namespace SampleTDD.Api.Controllers
 		public JSONResult<BPDTO> Get(string bpID)
 		{
 			ObjectId id = ObjectId.Parse(bpID);
-			var result = _bpService.GetDTO(id, _jwtService.Identity.RoleID, _jwtService.Identity.UserID);
+			BPDTO result = _bpService.GetDTO(id, _jwtService.Identity.RoleID, _jwtService.Identity.UserID);
 			return new JSONResult<BPDTO>(result);
 		}
 

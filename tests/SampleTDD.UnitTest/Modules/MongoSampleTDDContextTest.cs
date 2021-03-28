@@ -1,48 +1,53 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using SampleTDD.Core.Collections.StateMachine;
-using SampleTDD.Core.Constants;
-using SampleTDD.Core.Contracts.Repositories;
+﻿using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using System.Linq.Expressions;
+using System;
+using SampleTDD.Infrastructure.Data.Mongo;
+using SampleTDD.Core.DTOs.Settings;
+using SampleTDD.Core.Collections.StateMachine;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using SampleTDD.Core.Constants;
 using SampleTDD.Core.Collections;
 using System.Linq;
+using MongoDB.Bson;
 
-namespace SampleTDD.IntegrationTest.Seeds
+namespace SampleTDD.UnitTest.Modules
 {
-	public class DBSeed
+	public class MongoSampleTDDContextTest : MongoSampleTDDContext, IMongoSampleTDDContextTest
 	{
-		private readonly IMongoSampleTDDContext _db;
-		public DBSeed(IMongoSampleTDDContext db)
-		{
-			_db = db;
-		}
 
-		public void Init()
+		public MongoSampleTDDContextTest(IOptions<AppSettings> options) : base(options) { }
+
+
+
+		public void SeedData()
 		{
-			Task.Run(clean).Wait();
+			clean();
 			var list = new Task[] {
 				Task.Run(createBPCollection),
 				Task.Run(createBPStateCollection),
 
 				Task.Run(addStates),
 				Task.Run(addChangeStateRules),
+				Task.Run(newBP),
 			};
 
 			Task.WaitAll(list);
+
 		}
 
-		private async Task clean()
+		private void clean()
 		{
-			await _db.ChangeStateRules.DeleteManyAsync(x => true);
-			await _db.States.DeleteManyAsync(x => true);
-			await _db.BPs.DeleteManyAsync(x => true);
-			await _db.BPStates.DeleteManyAsync(x => true);
+			ChangeStateRules.DeleteMany(x => true);
+			States.DeleteMany(x => true);
+			BPs.DeleteMany(x => true);
+			BPStates.DeleteMany(x => true);
 		}
 
 		private async Task addStates()
 		{
-			await _db.States.InsertManyAsync(new List<State>
+			await States.InsertManyAsync(new List<State>
 			{
 				new State {
 						ID =  StateTypes.Start,
@@ -73,7 +78,7 @@ namespace SampleTDD.IntegrationTest.Seeds
 
 		private async Task addChangeStateRules()
 		{
-			await _db.ChangeStateRules.InsertManyAsync(new List<ChangeStateRule>
+			await ChangeStateRules.InsertManyAsync(new List<ChangeStateRule>
 			{
 				new ChangeStateRule {
 							RoleID  = RoleTypes.InsuredCustomer,
@@ -101,25 +106,62 @@ namespace SampleTDD.IntegrationTest.Seeds
 				}
 			});
 		}
+		public static readonly ObjectId BPID = ObjectId.GenerateNewId();
+		public static readonly long UserID = -2;
+		private async Task newBP()
+		{
+			await BPs.InsertOneAsync(new BP
+			{
+				_id = BPID,
+				CreationDate = DateTime.UtcNow,
+				CreationTime = DateTime.UtcNow,
+				IsDeleted = false,
+				SabteDarkhast = new Core.Collections.BPIs.BPISabteDarkhast.BPISabteDarkhast
+				{
+
+					BranchID = 1,
+					BranchName = "Berlin",
+					CityID = 150,
+					FullName = "Ali Asadi",
+					PhoneNumber = "+989126449201",
+					ProvinceID = 158
+				},
+				UserID = UserID,
+			});
+
+			await BPStates.InsertOneAsync(new BPState
+			{
+				_id = ObjectId.GenerateNewId(),
+				UserID = UserID,
+				BPID = BPID,
+				CompletedDateTime = null,
+				CreationDate = DateTime.UtcNow,
+				IsCompleted = false,
+				IsDeleted = false,
+				RoleID = RoleTypes.InsuredCustomer,
+				StateID = StateTypes.Start
+			});
+		}
 
 		private async Task createBPCollection()
 		{
-			var collectionList = _db.Database.ListCollectionNames().ToList();
+			var collectionList = Database.ListCollectionNames().ToList();
 			string collecName = nameof(BP);
 
 			if (collectionList.All(x => x != collecName))
-				await _db.Database.CreateCollectionAsync(collecName);
+				await Database.CreateCollectionAsync(collecName);
 
 		}
 
 		private async Task createBPStateCollection()
 		{
-			var collectionList = _db.Database.ListCollectionNames().ToList();
+			var collectionList = Database.ListCollectionNames().ToList();
 			string collecName = nameof(BPState);
 
 			if (collectionList.All(x => x != collecName))
-				await _db.Database.CreateCollectionAsync(collecName);
+				await Database.CreateCollectionAsync(collecName);
 
 		}
+
 	}
 }
