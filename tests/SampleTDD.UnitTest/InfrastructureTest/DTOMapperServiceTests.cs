@@ -6,7 +6,7 @@ using SampleTDD.Core.DTOs.States.Approve;
 using SampleTDD.Core.DTOs.States;
 using SampleTDD.Core.Contracts.Services;
 
-namespace SampleTDD.UnitTest.TestInfrastructure
+namespace SampleTDD.UnitTest.InfrastructureTest
 {
 	public class DTOMapperServiceTests
 	{

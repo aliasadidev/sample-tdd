@@ -4,7 +4,7 @@ using SampleTDD.UnitTest.Modules;
 using SampleTDD.UnitTest.Seeds;
 using Xunit;
 
-namespace SampleTDD.UnitTest.TestInfrastructure
+namespace SampleTDD.UnitTest.InfrastructureTest
 {
 	public class WorkflowEngineServiceTests : BaseUnitTest
 	{

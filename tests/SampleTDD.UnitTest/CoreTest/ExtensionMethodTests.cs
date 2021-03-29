@@ -11,7 +11,7 @@ using Moq;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace SampleTDD.UnitTest.TestCore
+namespace SampleTDD.UnitTest.CoreTest
 {
 	public class ExtensionMethodTests
 	{
