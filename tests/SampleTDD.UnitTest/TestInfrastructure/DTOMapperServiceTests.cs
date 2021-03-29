@@ -4,6 +4,7 @@ using Xunit;
 using SampleTDD.Infrastructure.Services;
 using SampleTDD.Core.DTOs.States.Approve;
 using SampleTDD.Core.DTOs.States;
+using SampleTDD.Core.Contracts.Services;
 
 namespace SampleTDD.UnitTest.TestInfrastructure
 {
@@ -14,10 +15,10 @@ namespace SampleTDD.UnitTest.TestInfrastructure
 		public void Get_GetDTOTypeByState(StateTypes state, Type dtoType)
 		{
 			// Arrange
-			var dtoMapperService = new DTOMapperService();
+			IDTOMapperService dtoMapperService = new DTOMapperService();
 
 			// Act
-			var bpiType = dtoMapperService.Get(state);
+			Type bpiType = dtoMapperService.Get(state);
 
 			// Assert
 			Assert.Equal(dtoType, bpiType);
@@ -28,10 +29,10 @@ namespace SampleTDD.UnitTest.TestInfrastructure
 		public void GetApproveType_GetApproveTypeIsCorrect(StateTypes state, Type dtoType)
 		{
 			// Arrange
-			var dtoMapperService = new DTOMapperService();
+			IDTOMapperService dtoMapperService = new DTOMapperService();
 
 			// Act
-			var bpiType = dtoMapperService.GetApproveType(state);
+			Type bpiType = dtoMapperService.GetApproveType(state);
 
 			// Assert
 			Assert.Equal(dtoType, bpiType);
@@ -42,7 +43,7 @@ namespace SampleTDD.UnitTest.TestInfrastructure
 		public void CheckApproveTypeIsMapped_ResultIsCorrect(StateTypes state)
 		{
 			// Arrange
-			var dtoMapperService = new DTOMapperService();
+			IDTOMapperService dtoMapperService = new DTOMapperService();
 
 			// Act
 			bool actualResult = dtoMapperService.CheckApproveTypeIsMapped(state);

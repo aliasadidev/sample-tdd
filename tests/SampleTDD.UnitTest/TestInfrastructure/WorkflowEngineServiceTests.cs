@@ -1,5 +1,7 @@
 using SampleTDD.Core.Contracts.Services;
+using SampleTDD.Core.DTOs.Security;
 using SampleTDD.UnitTest.Modules;
+using SampleTDD.UnitTest.Seeds;
 using Xunit;
 
 namespace SampleTDD.UnitTest.TestInfrastructure
@@ -10,11 +12,10 @@ namespace SampleTDD.UnitTest.TestInfrastructure
 		public void GetPremissions_is_correct_for_InsuredCustomer()
 		{
 			// Arrange
-			var srv = GetInstance<IWorkflowEngineService>();
+			IWorkflowEngineService srv = GetInstance<IWorkflowEngineService>();
 
 			// Act
-			var permission = srv.GetPremissions(MongoSampleTDDContextTest.BPID,
-					Core.Constants.RoleTypes.InsuredCustomer, MongoSampleTDDContextTest.UserID);
+			PermissionDTO permission = srv.GetPremissions(DBSeed.BPID, Core.Constants.RoleTypes.InsuredCustomer, DBSeed.UserID);
 
 			// Assert
 			Assert.True(permission.CanApprove);

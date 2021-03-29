@@ -5,6 +5,6 @@ namespace SampleTDD.UnitTest.Modules
 {
 	public interface IMongoSampleTDDContextTest : IMongoSampleTDDContext
 	{
-		void SeedData();
+
 	}
 }

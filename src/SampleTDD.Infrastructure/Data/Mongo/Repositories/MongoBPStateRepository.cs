@@ -17,7 +17,7 @@ namespace SampleTDD.Infrastructure.Data.Mongo.Repositories
 
 		public StateTypes GetRoleStateView(ObjectId bpID, RoleTypes role, StateTypes stateType)
 		{
-			var last = _db.BPStates.Aggregate().Match(x => x.BPID == bpID && x.RoleID == role && x.IsDeleted == false).SortByDescending(z => z.CreationDate).First();
+			BPState last = _db.BPStates.Aggregate().Match(x => x.BPID == bpID && x.RoleID == role && x.IsDeleted == false).SortByDescending(z => z.CreationDate).First();
 			return last.StateID;
 		}
 
@@ -39,26 +39,26 @@ namespace SampleTDD.Infrastructure.Data.Mongo.Repositories
 
 		public bool IsBPOwner(ObjectId bpID, long userID)
 		{
-			var q = _db.BPs.Find(x => x._id == bpID && x.UserID == userID).Any();
-			return q;
+			bool isBPOwner = _db.BPs.Find(x => x._id == bpID && x.UserID == userID).Any();
+			return isBPOwner;
 
 		}
 
 		public BPState GetFirstState(IClientSessionHandle session, ObjectId bpID)
 		{
-			var firstState = _currentCollec.Find(session, x => x.BPID == bpID && x.IsDeleted == false).SortBy(x => x.CreationDate).FirstOrDefault();
+			BPState firstState = _currentCollec.Find(session, x => x.BPID == bpID && x.IsDeleted == false).SortBy(x => x.CreationDate).FirstOrDefault();
 			return firstState;
 		}
 
 		public void CompleteBPState(IClientSessionHandle session, ObjectId bpID, StateTypes currentState, long? userID)
 		{
-			var current = _currentCollec.Find(session, x => x.BPID == bpID &&
+			BPState current = _currentCollec.Find(session, x => x.BPID == bpID &&
 													   x.IsCompleted == false &&
 													   x.IsDeleted == false &&
 													   x.StateID == currentState).FirstOrDefault();
 			if (current != null)
 			{
-				var fields = Builders<BPState>.Update.Set(x => x.IsCompleted, true)
+				UpdateDefinition<BPState> fields = Builders<BPState>.Update.Set(x => x.IsCompleted, true)
 													.Set(x => x.UserID, userID)
 													.Set(x => x.CompletedDateTime, DateTime.Now);
 
@@ -69,12 +69,12 @@ namespace SampleTDD.Infrastructure.Data.Mongo.Repositories
 
 		public IEnumerable<string> GetPreviousStates(IClientSessionHandle session, StateTypes nextState, ObjectId bpID, StateTypes currentState)
 		{
-			var next = _db.States.Find(x => x.ID == nextState).First();
-			var bpStates = _currentCollec.Find(session, e => e.BPID == bpID && e.IsCompleted == false && e.IsDeleted == false && e.StateID != currentState).Project(x => x.StateID).ToList();
+			State next = _db.States.Find(x => x.ID == nextState).First();
+			IEnumerable<StateTypes> bpStates = _currentCollec.Find(session, e => e.BPID == bpID && e.IsCompleted == false && e.IsDeleted == false && e.StateID != currentState).Project(x => x.StateID).ToList();
 			int count = next.HCode.Split('.').Count();
-			var baseHCode = next.HCode.Split('.');
+			string[] baseHCode = next.HCode.Split('.');
 
-			var query =
+			IMongoQueryable<string> query =
 					 from csr in _db.ChangeStateRules.AsQueryable()
 					 where bpStates.Contains(csr.CurrentState)
 					 join state in _db.States.AsQueryable() on csr.NextState equals state.ID
@@ -83,11 +83,11 @@ namespace SampleTDD.Infrastructure.Data.Mongo.Repositories
 
 
 
-			var lastHCode = next.HCode.LastIndexOf('.');
-			var fullHCode = (next.HCode.Substring(0, lastHCode + 1));
+			int lastHCode = next.HCode.LastIndexOf('.');
+			string fullHCode = (next.HCode.Substring(0, lastHCode + 1));
 
 
-			var states = query.ToList();
+			List<string> states = query.ToList();
 			if (states.Any(z => z.Split('.').Count() == count))
 			{
 				states.RemoveAll(z => (z.Split('.').Count() == count && !z.StartsWith(fullHCode)));
@@ -98,13 +98,13 @@ namespace SampleTDD.Infrastructure.Data.Mongo.Repositories
 
 		public bool CurrentStateIsCompleted(IClientSessionHandle session, StateTypes state, ObjectId bpID, RoleTypes role)
 		{
-			var isCompleted = _currentCollec.Find(session, x => x.BPID == bpID && x.StateID == state && x.IsCompleted == true && x.RoleID == role && x.IsDeleted == false).Any();
+			bool isCompleted = _currentCollec.Find(session, x => x.BPID == bpID && x.StateID == state && x.IsCompleted == true && x.RoleID == role && x.IsDeleted == false).Any();
 			return isCompleted;
 		}
 
 		public bool CurrentStateInProccess(IClientSessionHandle session, StateTypes state, ObjectId bpID, RoleTypes role)
 		{
-			var isCompleted = _currentCollec.Find(session, x =>
+			bool isCompleted = _currentCollec.Find(session, x =>
 										x.BPID == bpID &&
 										x.StateID == state &&
 										x.IsCompleted == false &&

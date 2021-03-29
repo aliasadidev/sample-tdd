@@ -5,8 +5,8 @@ using Microsoft.Extensions.Configuration;
 using SampleTDD.Core.Modules;
 using SampleTDD.Infrastructure.Services;
 using SampleTDD.Infrastructure.Data.Mongo;
-using SampleTDD.Core.DTOs.Settings;
 using Microsoft.Extensions.DependencyInjection;
+using SampleTDD.UnitTest.Seeds;
 
 namespace SampleTDD.UnitTest.Modules
 {
@@ -35,11 +35,12 @@ namespace SampleTDD.UnitTest.Modules
 
 				srvCollection.AddTransient<IMongoSampleTDDContextTest, MongoSampleTDDContextTest>();
 				srvCollection.AddTransient<MongoSampleTDDContext, MongoSampleTDDContextTest>();
+				srvCollection.AddSingleton<DBSeed>();
 
 				_serviceProvider = srvCollection.BuildServiceProvider();
 				_serviceScopeFactory = _serviceProvider.GetService<IServiceScopeFactory>();
 
-				var db = GetInstance<IMongoSampleTDDContextTest>();
+				var db = GetInstance<DBSeed>();
 				db.SeedData();
 			}
 		}

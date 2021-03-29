@@ -40,12 +40,12 @@ namespace SampleTDD.Infrastructure.Services
 
 			if (operationType == OperationTypes.Reject && currentRoleNextStates.Any(x => x.NextState == StateTypes.Start))
 			{
-				var en = _bpStateRepo.GetFirstState(session, bpID);
-				if (en != null)
+				BPState bpState = _bpStateRepo.GetFirstState(session, bpID);
+				if (bpState != null)
 					for (int i = 0; i < currentRoleNextStates.Length; i++)
 					{
 						if (currentRoleNextStates[i].NextState == StateTypes.Start)
-							currentRoleNextStates[i].RoleID = en.RoleID;
+							currentRoleNextStates[i].RoleID = bpState.RoleID;
 					}
 			}
 			return currentRoleNextStates.ToList();
@@ -53,13 +53,13 @@ namespace SampleTDD.Infrastructure.Services
 
 		public virtual void Approve(IClientSessionHandle session, ObjectId bpID, RoleTypes role, long userID)
 		{
-			var currentState = getCurrentBpState(session, bpID, role);
-			var nextStates = getNextBpStates(session, bpID, currentState, role, OperationTypes.Approve);
+			StateTypes currentState = getCurrentBpState(session, bpID, role);
+			IEnumerable<ChangeStateRule> nextStates = getNextBpStates(session, bpID, currentState, role, OperationTypes.Approve);
 
 			// one to many
 			if (nextStates.Count() > 1)
 			{
-				foreach (var nextState in nextStates)
+				foreach (ChangeStateRule nextState in nextStates)
 				{
 					RoleTypes nextRoleID;
 					bool isComplete = false;
@@ -80,7 +80,7 @@ namespace SampleTDD.Infrastructure.Services
 			}
 			else // many to one / one to one
 			{
-				var nextState = nextStates.First();
+				ChangeStateRule nextState = nextStates.First();
 				bool hasPreState;
 
 				if (_bpChangeStateRuleRepo.IsOneToOneState(nextState.NextState))
@@ -89,7 +89,7 @@ namespace SampleTDD.Infrastructure.Services
 				}
 				else
 				{
-					var preStates = _bpStateRepo.GetPreviousStates(session, nextState.NextState, bpID, currentState);
+					IEnumerable<string> preStates = _bpStateRepo.GetPreviousStates(session, nextState.NextState, bpID, currentState);
 					hasPreState = preStates.Count() < 1;
 				}
 				RoleTypes nextRoleID;
@@ -120,11 +120,11 @@ namespace SampleTDD.Infrastructure.Services
 		{
 			IEnumerable<ChangeStateRule> nextStates = _bpChangeStateRuleRepo.GetNextStep(currentState, operationType);
 
-			var currentRoleNextStates = (from role in new RoleTypes[] { roleID }
-										 join state in nextStates on role equals state.RoleID
-										 select new ChangeStateRule { NextState = state.NextState, RoleID = role }).ToList();
+			IEnumerable<ChangeStateRule> currentRoleNextStates = (from role in new RoleTypes[] { roleID }
+																  join state in nextStates on role equals state.RoleID
+																  select new ChangeStateRule { NextState = state.NextState, RoleID = role }).ToList();
 
-			var _nextState = currentRoleNextStates.FirstOrDefault();
+			ChangeStateRule _nextState = currentRoleNextStates.FirstOrDefault();
 			if (_nextState == null || _nextState.NextState == 0)
 				throw new CustomException("the next state not found", StatusCodeTypes.UndefineStateMachineTransmission.ToInt());
 
@@ -141,8 +141,8 @@ namespace SampleTDD.Infrastructure.Services
 
 		public virtual void Start(IClientSessionHandle session, ObjectId bpID, RoleTypes roleID, long userID)
 		{
-			var state = getSingleNextBPState(StateTypes.Start, roleID, OperationTypes.Start);
-			changeBPState(session, bpID, state.CurrentState, state.RoleID, false, userID, false);
+			ChangeStateRule changeStateRule = getSingleNextBPState(StateTypes.Start, roleID, OperationTypes.Start);
+			changeBPState(session, bpID, changeStateRule.CurrentState, changeStateRule.RoleID, false, userID, false);
 		}
 
 		private ObjectId changeBPState(IClientSessionHandle session, ObjectId bpID, StateTypes state, RoleTypes role, bool isCompleted, long? userID, bool setDetailField = false)
@@ -171,14 +171,14 @@ namespace SampleTDD.Infrastructure.Services
 
 		public PermissionDTO GetPremissions(ObjectId bpID, RoleTypes roleID, long userID)
 		{
-			var currentState = GetCurrentBpState(bpID, roleID);
+			StateTypes currentState = GetCurrentBpState(bpID, roleID);
 
-			var operation = _bpChangeStateRuleRepo.GetCurrentOperations(roleID, currentState);
+			PermissionDTO operation = _bpChangeStateRuleRepo.GetCurrentOperations(roleID, currentState);
 
 
 			if (currentState == StateTypes.Start)
 			{
-				var isOwner = _bpStateRepo.IsBPOwner(bpID, userID);
+				bool isOwner = _bpStateRepo.IsBPOwner(bpID, userID);
 				operation.CanApprove = operation.CanApprove && isOwner;
 			}
 
@@ -186,7 +186,7 @@ namespace SampleTDD.Infrastructure.Services
 		}
 		public StateTypes GetCurrentBpState(ObjectId bpID, RoleTypes roleID)
 		{
-			var activeStates = _bpStateRepo.GetCurrentBPState(bpID);
+			IEnumerable<BPState> activeStates = _bpStateRepo.GetCurrentBPState(bpID);
 			StateTypes activeState;
 
 			if (activeStates.Any(x => x.RoleID == roleID))
@@ -198,7 +198,7 @@ namespace SampleTDD.Infrastructure.Services
 		}
 		private StateTypes getCurrentBpState(IClientSessionHandle session, ObjectId bpID, RoleTypes roleID)
 		{
-			var activeStates = _bpStateRepo.GetCurrentBPState(session, bpID);
+			IEnumerable<BPState> activeStates = _bpStateRepo.GetCurrentBPState(session, bpID);
 			StateTypes activeState;
 
 			if (activeStates.Any(x => x.RoleID == roleID))
