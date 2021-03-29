@@ -14,8 +14,8 @@ namespace SampleTDD.UnitTest.Seeds
 {
 	public class DBSeed
 	{
-		private readonly IMongoSampleTDDContextTest _db;
-		public DBSeed(IMongoSampleTDDContextTest db)
+		private readonly IMongoSampleTDDContext _db;
+		public DBSeed(IMongoSampleTDDContext db)
 		{
 			_db = db;
 		}
@@ -115,7 +115,6 @@ namespace SampleTDD.UnitTest.Seeds
 			{
 				_id = BPID,
 				CreationDate = DateTime.UtcNow,
-				CreationTime = DateTime.UtcNow,
 				IsDeleted = false,
 				SabteDarkhast = new Core.Collections.BPIs.BPISabteDarkhast.BPISabteDarkhast
 				{

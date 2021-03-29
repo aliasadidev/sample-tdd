@@ -17,7 +17,7 @@ namespace SampleTDD.UnitTest.CoreTest
 	{
 
 		[Fact]
-		public void ChangeNaming_ConvertObjectIdTypeToStringAndViceVersa()
+		public void ChangeNamingConvertObjectIdTypeToStringAndViceVersa()
 		{
 			// Arrange
 			Mock<IBaseCollection> collection = new Mock<IBaseCollection>();
@@ -39,7 +39,7 @@ namespace SampleTDD.UnitTest.CoreTest
 
 
 		[Fact]
-		public void MergeObject_MergeTwoObjectIsCorrect()
+		public void MergeObjectMergeTwoObjectIsCorrect()
 		{
 			string objID = ObjectId.GenerateNewId().ToString();
 			const string stateName = "Start";
@@ -59,7 +59,7 @@ namespace SampleTDD.UnitTest.CoreTest
 
 
 		[Fact]
-		public void MergeObject_MergeTwoObjectIsCorrect_Test2()
+		public void MergeObjectMergeTwoObjectIsCorrectTest2()
 		{
 			string objID = ObjectId.GenerateNewId().ToString();
 			const string stateName = "Start";

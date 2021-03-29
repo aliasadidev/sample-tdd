@@ -12,7 +12,7 @@ namespace SampleTDD.UnitTest.InfrastructureTest
 	{
 		[Theory]
 		[InlineData(StateTypes.Start, typeof(SabteDarkhastStateDTO))]
-		public void Get_GetDTOTypeByState(StateTypes state, Type dtoType)
+		public void GetGetDTOTypeByState(StateTypes state, Type dtoType)
 		{
 			// Arrange
 			IDTOMapperService dtoMapperService = new DTOMapperService();
@@ -26,7 +26,7 @@ namespace SampleTDD.UnitTest.InfrastructureTest
 
 		[Theory]
 		[InlineData(StateTypes.Start, typeof(SabteDarkhastStateApproveDTO))]
-		public void GetApproveType_GetApproveTypeIsCorrect(StateTypes state, Type dtoType)
+		public void GetApproveTypeGetApproveTypeIsCorrect(StateTypes state, Type dtoType)
 		{
 			// Arrange
 			IDTOMapperService dtoMapperService = new DTOMapperService();
@@ -40,7 +40,7 @@ namespace SampleTDD.UnitTest.InfrastructureTest
 
 		[Theory]
 		[InlineData(StateTypes.Start)]
-		public void CheckApproveTypeIsMapped_ResultIsCorrect(StateTypes state)
+		public void CheckApproveTypeIsMappedResultIsCorrect(StateTypes state)
 		{
 			// Arrange
 			IDTOMapperService dtoMapperService = new DTOMapperService();

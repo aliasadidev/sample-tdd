@@ -18,6 +18,8 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1"/>
 		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0"/>
+		<PackageReference Include="Mongo2Go" Version="3.0.0"/>
+		<PackageReference Include="Xunit.Priority" Version="1.1.6"/>
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\src\SampleTDD.Core\SampleTDD.Core.csproj"/>

@@ -7,10 +7,8 @@ namespace SampleTDD.Infrastructure.Data.Mongo.Repositories
 {
 	public class MongoBPRepository : MongoRepositoryBase<BP>, IMongoBPRepository
 	{
-		private readonly IMapper _mapper;
-		public MongoBPRepository(IMongoSampleTDDContext mongoSampleTDDContext, IMapper mapper) : base(mongoSampleTDDContext)
+		public MongoBPRepository(IMongoSampleTDDContext mongoSampleTDDContext) : base(mongoSampleTDDContext)
 		{
-			_mapper = mapper;
 		}
 
 		public bool UpdateOrInsertBPI(IClientSessionHandle session, BP collection)

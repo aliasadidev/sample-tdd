@@ -48,7 +48,6 @@ namespace SampleTDD.Infrastructure.Services
 
 			bpCollec.SabteDarkhast = sabteDarkhast;
 			bpCollec.UserID = userID;
-			bpCollec.CreationTime = DateTime.Now;
 
 			_bpRepo.StartTransaction((session) =>
 			{

@@ -9,9 +9,6 @@ namespace SampleTDD.Core.Collections
 	{
 		public long UserID { get; set; }
 
-		[BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
-		public DateTime CreationTime { get; set; }
-
 		public BPISabteDarkhast SabteDarkhast { get; set; }
 
 	}
