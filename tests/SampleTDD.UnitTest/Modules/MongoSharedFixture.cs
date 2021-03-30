@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SampleTDD.Core.Contracts.Repositories;
@@ -22,10 +23,16 @@ namespace SampleTDD.UnitTest.Modules
 			IConfiguration configuration = configurationBuilder.Build();
 			ServiceCollection srvCollection = new ServiceCollection();
 
-			srvCollection.AddTransient<IMongoSampleTDDContext, MongoSampleTDDContextTest>();
 			srvCollection.RegisterCoreServices();
 			srvCollection.RegisterMongoRepositoryServices();
 			srvCollection.RegisterInfrastructureServices();
+
+			var descriptors = srvCollection.Where(d => d.ServiceType == typeof(IMongoSampleTDDContext)).ToList();
+			foreach (var descriptor in descriptors)
+			{
+				srvCollection.Remove(descriptor);
+			}
+			srvCollection.AddSingleton<IMongoSampleTDDContext, MongoSampleTDDContextTest>();
 
 			srvCollection.Configure<AppSettings>(configuration);
 

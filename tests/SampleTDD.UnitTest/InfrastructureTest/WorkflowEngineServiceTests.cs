@@ -41,8 +41,10 @@ namespace SampleTDD.UnitTest.InfrastructureTest
 		{
 			//Arrange
 			IWorkflowEngineService srv = sharedFixture.GetInstance<IWorkflowEngineService>();
+
 			//Act
 			StateTypes currentBPState = srv.GetCurrentBpState(DBSeed.BPID, RoleTypes.InsuredCustomer);
+			
 			//Assert
 			Assert.Equal(StateTypes.Start, currentBPState);
 		}

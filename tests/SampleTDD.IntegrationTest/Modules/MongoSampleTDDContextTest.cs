@@ -5,7 +5,7 @@ using SampleTDD.Core.Collections;
 using SampleTDD.Core.Contracts.Repositories;
 using Mongo2Go;
 
-namespace SampleTDD.UnitTest.Modules
+namespace SampleTDD.IntegrationTest.Modules
 {
 	public class MongoSampleTDDContextTest : IDisposable, IMongoSampleTDDContext
 	{
@@ -32,6 +32,7 @@ namespace SampleTDD.UnitTest.Modules
 			this.BPStates = Set<BPState>();
 			this.ChangeStateRules = Set<ChangeStateRule>();
 			this.States = Set<Core.Collections.StateMachine.State>();
+
 		}
 
 		public void Dispose()

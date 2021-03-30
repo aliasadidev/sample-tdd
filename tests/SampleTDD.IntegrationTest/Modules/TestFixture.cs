@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using System.Net.Http.Headers;
 using System.Linq;
-using SampleTDD.IntegrationTest.TestServices;
+using SampleTDD.IntegrationTest.Modules;
 using SampleTDD.Core.Contracts.Repositories;
 using SampleTDD.IntegrationTest.Seeds;
 
@@ -40,7 +40,7 @@ namespace SampleTDD.IntegrationTest
 				.SetBasePath(contentRoot)
 				.AddJsonFile("appsettings.Development.json");
 			var configuration = configurationBuilder.Build();
-			configuration["MongoDB:Database"] = configuration["MongoDB:Database"] + Guid.NewGuid();
+			configuration["MongoDB:Database"] = configuration["MongoDB:Database"];
 
 			var webHostBuilder = new WebHostBuilder()
 				.UseContentRoot(contentRoot)
@@ -58,7 +58,7 @@ namespace SampleTDD.IntegrationTest
 						services.Remove(descriptor);
 					}
 
-					services.AddTransient<IMongoSampleTDDContext, TestMongoSampleTDDContext>();
+					services.AddSingleton<IMongoSampleTDDContext, MongoSampleTDDContextTest>();
 					services.AddTransient<DBSeed>();
 					services.AddRazorPages();
 				});

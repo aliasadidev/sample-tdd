@@ -41,19 +41,20 @@ namespace SampleTDD.UnitTest.CoreTest
 		[Fact]
 		public void MergeObjectMergeTwoObjectIsCorrect()
 		{
+			// Arrange
 			string objID = ObjectId.GenerateNewId().ToString();
 			const string stateName = "Start";
 
 			var stateDTO = new Mock<StateDTO>();
 			stateDTO.Setup(x => x.StateName).Returns(stateName);
-
-
 			var bpDTO = new BPDTO() { ID = objID };
 
-			//Test case 1
+			// Act
 			BPDTO mergeResult = Core.Modules.CoreExtensions.MergeObject(stateDTO.Object, bpDTO);
 			var expectedResult = JsonConvert.SerializeObject(new BPDTO { StateName = stateName, ID = objID });
 			var actualResult = JsonConvert.SerializeObject(mergeResult);
+			
+			// Assert
 			Assert.Equal(expectedResult, actualResult);
 		}
 
@@ -61,18 +62,17 @@ namespace SampleTDD.UnitTest.CoreTest
 		[Fact]
 		public void MergeObjectMergeTwoObjectIsCorrectTest2()
 		{
+			// Arrange
 			string objID = ObjectId.GenerateNewId().ToString();
 			const string stateName = "Start";
 
 			var stateDTO = new Mock<StateDTO>();
 			stateDTO.Setup(x => x.StateName).Returns(stateName);
-
-
 			var bpDTO = new BPDTO() { ID = objID };
 
 
 
-			//Test case 2
+			// Act
 			const StateTypes stateType = StateTypes.Start;
 			stateDTO.Setup(x => x.StateType).Returns(stateType);
 			BPDTO mergeResult = Core.Modules.CoreExtensions.MergeObject(stateDTO.Object, bpDTO, new List<string>() {
@@ -80,6 +80,8 @@ namespace SampleTDD.UnitTest.CoreTest
 			});
 			var expectedResult = JsonConvert.SerializeObject(new BPDTO { StateName = stateName, ID = objID, StateType = stateType });
 			var actualResult = JsonConvert.SerializeObject(mergeResult);
+			
+			// Assert
 			Assert.NotEqual(mergeResult.StateType, stateType);
 			Assert.NotEqual(expectedResult, actualResult);
 		}

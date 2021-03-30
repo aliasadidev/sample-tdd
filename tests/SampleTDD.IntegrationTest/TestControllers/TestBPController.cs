@@ -89,6 +89,7 @@ namespace SampleTDD.IntegrationTest.TestControllers
 			var request = $"/api/{ bpCtrlName }/{nameof(Api.Controllers.BPController.Get)}/{ resultDTO.ID }";
 			var response = _client.GetAsync(request).Result;
 			var resultDTOGet = response.ToDTOResult<BPDTO>();
+
 			// Assert
 			response.EnsureSuccessStatusCode();
 			Assert.True(resultDTOGet.StatusCode == 200);
